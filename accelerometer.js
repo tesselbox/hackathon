@@ -7,10 +7,11 @@ of x, y, and z data from the accelerometer
 *********************************************/
 
 var tessel = require('tessel');
+var accellib = require('accel-mma84');
 
 function Accelerometer (port, callback){
 
-  var accel = require('accel-mma84').use(tessel.port['B']);
+  var accel = accellib.use(tessel.port['B']);
   this.accelFilter = {
     init: false,
     x: 0,

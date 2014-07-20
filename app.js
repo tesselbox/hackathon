@@ -1,7 +1,7 @@
 var climateSensor = require('./climate');
 var accelerometer = require('./accelerometer');
 var ambient = require('./ambient');
-var phone = require('./tesselPhone')
+var phone = require('./tesselPhone');
 
 var climate = [];
 var humidity = [];
@@ -9,7 +9,17 @@ var acceleration =[];
 var light = [];
 var sound = [];
 
+/* API for phone:
+phone.sendMessage(number:String, message:String);
+*/
+
 function main(){
+
+  var msg = function(){
+    phone.sendMessage('17654096466', 'data exceeded threshold');
+  };
+
+  var run = throttle(msg,20000, {trailing:false});
 
   var getClimateData = function(data){
     var tempObj = {
@@ -23,6 +33,7 @@ function main(){
       humidity: data.humidity
     };
     humidity.push(humObj);
+    console.log('clim', data);
   };
   climateSensor(1000, 'C', getClimateData);
 
@@ -32,6 +43,10 @@ function main(){
       accel: data.accel
     };
     acceleration.push(accelObj);
+
+    run();
+    console.log('accel', data);
+
   };
   accelerometer('D',getAccelData);
 
@@ -49,10 +64,11 @@ function main(){
       };
       sound.push(soundObj);
     }
+
+    run();
+    console.log('am', data);
   };
   ambient('B', getAmbientData);
-
-  
 
 }
 
@@ -101,3 +117,36 @@ var server = http.createServer(function (req, res) {
     }
 });
 server.listen(8000);
+
+
+function throttle(func, wait, options) {
+    var context, args, result;
+    var timeout = null;
+    var previous = 0;
+    options || (options = {});
+    var later = function() {
+      previous = options.leading === false ? 0 : Date.now();
+      timeout = null;
+      result = func.apply(context, args);
+      context = args = null;
+    };
+    return function() {
+      var now = Date.now();
+      if (!previous && options.leading === false) previous = now;
+      var remaining = wait - (now - previous);
+      context = this;
+      args = arguments;
+      if (remaining <= 0) {
+        clearTimeout(timeout);
+        timeout = null;
+        previous = now;
+        result = func.apply(context, args);
+        context = args = null;
+      } else if (!timeout && options.trailing !== false) {
+        timeout = setTimeout(later, remaining);
+      }
+      return result;
+    };
+  };
+
+  main();
