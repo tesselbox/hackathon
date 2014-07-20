@@ -62,3 +62,5 @@ var tesselPhone = (function() {
     sendMessage: sendMessage
   };
 })();
+
+module.exports = tesselPhone;

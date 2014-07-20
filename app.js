@@ -1,6 +1,7 @@
-var climateSensor = require('climate');
-var accelerometer = require('accelerometer');
-// var ambient = require('ambient');
+var climateSensor = require('./climate');
+var accelerometer = require('./accelerometer');
+var ambient = require('./ambient');
+var phone = require('./tesselPhone')
 
 var climate = [];
 var humidity = [];
@@ -23,7 +24,7 @@ function main(){
     };
     humidity.push(humObj);
   };
-  climateSensor(1000, 'B', getClimateData);
+  climateSensor(1000, 'C', getClimateData);
 
   var getAccelData = function(data){
     var accelObj = {
@@ -32,7 +33,7 @@ function main(){
     };
     acceleration.push(accelObj);
   };
-  accelerometer('C',getAccelData);
+  accelerometer('D',getAccelData);
 
   var getAmbientData = function(data){
     if (data[light] !== undefined){
@@ -49,8 +50,10 @@ function main(){
       sound.push(soundObj);
     }
   };
+  ambient('B', getAmbientData);
 
-  ambient('D', getAmbientData);
+  
+
 }
 
 /* HANDLERS */
